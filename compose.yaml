@@ -9,14 +9,15 @@
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=messagedb;Username=postgres;Password=yourpassword
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=MessagingServiceDB;Username=postgres;Password=sn90fr77
 
   db:
-    image: postgres:14
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: messagedb
+    image: postgres:latest
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=sn90fr77
+      - POSTGRES_DB=MessagingServiceDB
+
+
