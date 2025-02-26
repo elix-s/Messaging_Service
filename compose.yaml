@@ -1,0 +1,24 @@
+﻿version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./MessagingService
+      dockerfile: Dockerfile
+    ports:
+      - "5266:80"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=messagedb;Username=postgres;Password=yourpassword
+
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: messagedb
+    ports:
+      - "5432:5432"
