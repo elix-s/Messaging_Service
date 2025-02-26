@@ -1,29 +1,50 @@
+using System.Net.WebSockets;
+using MessagingService.DAL;
+using MessagingService.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<MessageBroadcaster>();
+builder.Services.AddSingleton<MessageRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+var messageRepository = app.Services.GetRequiredService<MessageRepository>();
+messageRepository.InitDatabase();
+
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseWebSockets();
 
-app.MapStaticAssets();
+app.Map("/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        var broadcaster = context.RequestServices.GetRequiredService<MessageBroadcaster>();
+        await broadcaster.RegisterAsync(webSocket);
+    }
+    else
+    {
+        context.Response.StatusCode = 400;
+    }
+});
 
 app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

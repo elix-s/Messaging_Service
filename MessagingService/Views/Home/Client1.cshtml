@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Client 1 - Отправка сообщений</title>
+    <script>
+        async function sendMessage(event) {
+            event.preventDefault();
+            const orderNumber = document.getElementById('orderNumber').value;
+            const text = document.getElementById('text').value;
+
+            if (!text || text.length > 128) {
+                alert("Текст сообщения обязателен и не может превышать 128 символов.");
+                return;
+            }
+
+            const payload = {
+                orderNumber: parseInt(orderNumber),
+                text: text
+            };
+
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    alert("Сообщение успешно отправлено!");
+                    document.getElementById('text').value = '';
+                } else {
+                    alert("Ошибка отправки сообщения.");
+                }
+            }
+            catch (error) {
+                console.error("Error sending: ", error);
+                alert("Ошибка отправки сообщения.");
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>Client 1: Отправка сообщения</h1>
+<form onsubmit="sendMessage(event)">
+    <label for="orderNumber">Порядковый номер:</label><br/>
+    <input type="number" id="orderNumber" name="orderNumber" required /><br/><br/>
+    <label for="text">Текст сообщения (макс. 128 символов):</label><br/>
+    <textarea id="text" name="text" maxlength="128" required></textarea><br/><br/>
+    <button type="submit">Отправить сообщение</button>
+</form>
+<br/>
+<a href="/">Назад на главную</a>
+</body>
+</html>

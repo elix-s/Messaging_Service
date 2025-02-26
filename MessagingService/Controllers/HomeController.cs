@@ -1,31 +1,30 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using MessagingService.Models;
 
-namespace MessagingService.Controllers;
-
-public class HomeController : Controller
+namespace MessagingService.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
-
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult Index()
+        {
+            return View();
+        }
+        
+        [HttpGet("client1")]
+        public IActionResult Client1()
+        {
+            return View("Client1");
+        }
+        
+        [HttpGet("client2")]
+        public IActionResult Client2()
+        {
+            return View("Client2");
+        }
+        
+        [HttpGet("client3")]
+        public IActionResult Client3()
+        {
+            return View("Client3");
+        }
     }
 }
